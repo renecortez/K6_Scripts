@@ -1,16 +1,20 @@
 pipeline {
   agent any
-  options { ansiColor('xterm'); timestamps() }
+
+  options {
+    ansiColor('xterm')
+    timestamps()
+  }
 
   environment {
+    // Ajusta si k6 quedó en otra ruta
     K6_BIN = '"C:\\Program Files\\k6\\k6.exe"'
   }
 
   stages {
     stage('Checkout') {
       steps {
-        // En multibranch Jenkins ya hace checkout automáticamente,
-        // pero lo dejamos por claridad; puedes quitarlo si quieres.
+        // Multibranch usa automáticamente la rama detectada
         checkout scm
       }
     }
@@ -32,6 +36,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'report.html, summary.json', fingerprint: true, onlyIfSuccessful: false
+      // Requiere el plugin "HTML Publisher"
       publishHTML(target: [
         reportDir: '.',
         reportFiles: 'report.html',
